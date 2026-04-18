@@ -28,7 +28,7 @@ const translations = {
     ctaSub: "Let's build something powerful together.",
     ctaWhatsApp: "WhatsApp",
     ctaEmail: "hola@eonalabs.com",
-    footer: "© 2026 Eona Labs · eonalabs.ai ✓",
+    footer: "© 2026 Eona Labs · eonalabs.ai",
   },
   es: {
     nav: ["Soluciones", "Nosotros", "Contacto"],
