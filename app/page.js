@@ -30,7 +30,7 @@ const translations = {
     ctaTitle: "Ready to Scale?",
     ctaSub: "Let's build something powerful together.",
     ctaWhatsApp: "WhatsApp",
-    ctaEmail: "hola@eonalabs.com",
+    ctaEmail: "hola@eonalabs.io",
     footer: "© 2026 Eona Labs · eonalabs.ai",
   },
   es: {
@@ -59,7 +59,7 @@ const translations = {
     ctaTitle: "¿Listo para Escalar?",
     ctaSub: "Construyamos algo poderoso juntos.",
     ctaWhatsApp: "WhatsApp",
-    ctaEmail: "hola@eonalabs.com",
+    ctaEmail: "hola@eonalabs.io",
     footer: "© 2026 Eona Labs · eonalabs.ai",
   },
 };
@@ -337,7 +337,7 @@ export default function Home() {
                   {t.ctaWhatsApp}
                 </a>
                 <a
-                  href="mailto:hola@eonalabs.com"
+                  href="mailto:hola@eonalabs.io"
                   className="px-8 py-4 rounded-xl border border-white/15 text-gray-300 hover:border-purple-500/50 hover:text-white transition font-semibold"
                 >
                   {t.ctaEmail}
