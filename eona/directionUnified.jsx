@@ -11,6 +11,8 @@ function DirectionUnified() {
   });
   const setTheme = (t) => { setThemeState(t); try { localStorage.setItem('eona_theme', t); } catch (e) {} };
   const [sent, setSent] = React.useState(false);
+  const [sending, setSending] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState('');
   const [active, setActive] = React.useState(0);
   const rootRef = React.useRef(null);
   useReveal();
@@ -429,21 +431,49 @@ function DirectionUnified() {
             </h2>
             <div className="sub" data-reveal data-reveal-d="2">{t.contact.sub}</div>
             <div className="or" data-reveal data-reveal-d="3">
-              {t.contact.or} <a href="mailto:hello@eonalabs.io">hello@eonalabs.io</a>
+              {t.contact.or} <a href="mailto:hola@eonalabs.io">hola@eonalabs.io</a>
             </div>
           </div>
-          <form className="form" onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
+          <form className="form" onSubmit={async (e) => {
+            e.preventDefault();
+            if (sending || sent) return;
+            const form = e.currentTarget;
+            // Honeypot — if filled, silently "succeed"
+            if (form.elements.website && form.elements.website.value) { setSent(true); return; }
+            setSending(true); setErrorMsg('');
+            try {
+              const data = new FormData(form);
+              data.append('_subject', `Nuevo lead EonaLabs · ${data.get('name') || ''}`);
+              const res = await fetch('https://formspree.io/f/mbdwgbbj', {
+                method: 'POST', body: data, headers: { Accept: 'application/json' },
+              });
+              if (res.ok) { setSent(true); form.reset(); }
+              else {
+                const j = await res.json().catch(() => ({}));
+                setErrorMsg((j && j.errors && j.errors[0] && j.errors[0].message) || (lang === 'es' ? 'No se pudo enviar. Intenta de nuevo o escríbenos a hola@eonalabs.io' : 'Could not send. Try again or email hola@eonalabs.io'));
+              }
+            } catch (err) {
+              setErrorMsg(lang === 'es' ? 'Error de conexión. Revisa tu internet o escríbenos a hola@eonalabs.io' : 'Connection error. Check your internet or email hola@eonalabs.io');
+            } finally { setSending(false); }
+          }}>
             <div className="form-grid-bg" />
+            {/* honeypot */}
+            <input type="text" name="website" tabIndex="-1" autoComplete="off" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} aria-hidden="true" />
             <div className="form-row">
-              <div className="field"><label>{t.contact.name}</label><input required placeholder={t.contact.namePh} /></div>
-              <div className="field"><label>{t.contact.company}</label><input placeholder={t.contact.companyPh} /></div>
+              <div className="field"><label>{t.contact.name}</label><input name="name" required placeholder={t.contact.namePh} /></div>
+              <div className="field"><label>{t.contact.company}</label><input name="company" placeholder={t.contact.companyPh} /></div>
             </div>
-            <div className="field"><label>{t.contact.email}</label><input type="email" required placeholder={t.contact.emailPh} /></div>
-            <div className="field"><label>{t.contact.need}</label><textarea rows="3" required placeholder={t.contact.needPh} /></div>
+            <div className="field"><label>{t.contact.email}</label><input name="email" type="email" required placeholder={t.contact.emailPh} /></div>
+            <div className="field"><label>{t.contact.need}</label><textarea name="message" rows="3" required placeholder={t.contact.needPh} /></div>
             {sent ? (
               <div className="sent">{t.contact.sent}</div>
             ) : (
-              <button className="btn-primary" type="submit">{t.contact.send} <span className="arr">→</span></button>
+              <React.Fragment>
+                <button className="btn-primary" type="submit" disabled={sending}>
+                  {sending ? (lang === 'es' ? 'Enviando…' : 'Sending…') : t.contact.send} <span className="arr">→</span>
+                </button>
+                {errorMsg && <div className="err" style={{ marginTop: 14, fontSize: 13, color: '#ff6b6b' }}>{errorMsg}</div>}
+              </React.Fragment>
             )}
           </form>
         </div>
@@ -464,7 +494,7 @@ function DirectionUnified() {
           </div>
           <div className="footer-col">
             <div className="h">{lang === 'es' ? 'Contacto' : 'Contact'}</div>
-            <a href="mailto:hello@eonalabs.io">hello@eonalabs.io</a>
+            <a href="mailto:hola@eonalabs.io">hola@eonalabs.io</a>
             <a href="#contact" onClick={(e) => handleAnchor(e, 'contact')}>{t.nav.cta}</a>
           </div>
           <div className="footer-col">
